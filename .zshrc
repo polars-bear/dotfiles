@@ -1,20 +1,95 @@
-# Use powerline
-USE_POWERLINE="true"
-# Source manjaro-zsh-configuration
-if [[ -e /usr/share/zsh/manjaro-zsh-config ]]; then
-  source /usr/share/zsh/manjaro-zsh-config
-fi
-# Use manjaro zsh prompt
-if [[ -e /usr/share/zsh/manjaro-zsh-prompt ]]; then
-  source /usr/share/zsh/manjaro-zsh-prompt
-fi
+# ================================================= #
+# d8888b.  .d88b.  db       .d8b.  d8888b. .d8888.  #
+# 88  `8D .8P  Y8. 88      d8' `8b 88  `8D 88'  YP  #
+# 88oodD' 88    88 88      88ooo88 88oobY' `8bo.    #
+# 8888P   88    88 88      8888888 88`8b     `Y8b.  #
+# 88      `8b  d8' 88booo. 88   88 88 `88. db   8D  #
+# 88       `Y88P'  Y88888P YP   YP 88   YD `8888Y'  #
+# ================================================= #
 
-# Set editor
+#!/bin/zsh
+export ZDOTDIR=$HOME/.config/zsh
+
+# source custom functions
+source "$ZDOTDIR/zsh-functions"
+
+zsh_add_file "zsh-aliases"
+zsh_add_file "zsh-vim-mode"
+
+# plugins
+zsh_add_plugin "zsh-users/zsh-autosuggestions"
+zsh_add_plugin "zsh-users/zsh-syntax-highlighting"
+
+# set options
+setopt menucomplete
+setopt extendedglob
+setopt interactive_comments
+
+# configure history
+HISTSIZE=10000
+SAVEHIST=10000
+HISTFILE=~/.zsh_history
+setopt appendhistory
+setopt HIST_EXPIRE_DUPS_FIRST
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_IGNORE_SPACE
+setopt HIST_FIND_NO_DUPS
+setopt HIST_SAVE_NO_DUPS
+
+# completions
+autoload -Uz compinit
+# zstyle ':completion:*' menu select
+# zstyle ':completion::complete:lsof:*' menu yes select
+zmodload zsh/complist
+_comp_options+=(globdots)		# Include hidden files.
+compinit
+
+autoload -U up-line-or-beginning-search
+autoload -U down-line-or-beginning-search
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+
+bindkey "^k" up-line-or-beginning-search # Up in history
+bindkey "^j" down-line-or-beginning-search # Down in history
+
+# Edit line in vim
+autoload edit-command-line
+zle -N edit-command-line
+
+# use colors
+autoload -U colors && colors
+
+# set PROMPT
+# from https://github.com/zsh-users/zsh/blob/master/Misc/vcs_info-examples
+setopt prompt_subst
+autoload -Uz vcs_info
+zstyle ':vcs_info:*' enable git svn
+precmd_vcs_info() { vcs_info }
+precmd_functions+=( precmd_vcs_info )
+
+# add a function to check for untracked files in the directory.
+zstyle ':vcs_info:git*+set-message:*' hooks git-untracked
+# 
++vi-git-untracked(){
+    if [[ $(git rev-parse --is-inside-work-tree 2> /dev/null) == 'true' ]] && \
+        git status --porcelain | grep '??' &> /dev/null ; then
+        # This will show the marker if there are any untracked files in repo.
+        # If instead you want to show the marker only if there are untracked
+        # files in $PWD, use:
+        #[[ -n $(git ls-files --others --exclude-standard) ]] ; then
+        hook_com[staged]+='*' # signify new files with a bang
+    fi
+}
+
+zstyle ':vcs_info:*' check-for-changes true
+zstyle ':vcs_info:git*' formats "%F{11}[%b]%F{9}%m%u%c%{$reset_color%}"
+
+PROMPT='%F{10}%n%F{13}@%F{4}%~%{$reset_color%}${vcs_info_msg_0_} '
+# set editor and browser
 export EDITOR='nvim'
+export BROWSER="firefox"
+export TERMINAL="konsole"
 
-# Set PATH
-export GOROOT=/usr/local/go
-export GOHOME=$HOME/go
-export LSPSERVERS=$HOME/.local/share/nvim/lsp_servers
-
-export PATH=$PATH:$GOROOT/bin:$GOHOME/bin
+# extend PATH
+export PATH=$PATH
