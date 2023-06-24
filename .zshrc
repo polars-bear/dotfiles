@@ -28,7 +28,7 @@ setopt interactive_comments
 # configure history
 HISTSIZE=10000
 SAVEHIST=10000
-HISTFILE=~/.zsh_history
+HISTFILE="$ZDOTDIR/.zsh_history"
 setopt appendhistory
 setopt HIST_EXPIRE_DUPS_FIRST
 setopt HIST_IGNORE_DUPS
@@ -39,12 +39,14 @@ setopt HIST_SAVE_NO_DUPS
 
 # completions
 autoload -Uz compinit
-# zstyle ':completion:*' menu select
-# zstyle ':completion::complete:lsof:*' menu yes select
+zstyle ':completion:*' menu select
+zstyle ':completion::complete:lsof:*' menu yes select
+
 zmodload zsh/complist
 _comp_options+=(globdots)		# Include hidden files.
 compinit
 
+# use Ctrl+k and Ctrl+j to scroll history
 autoload -U up-line-or-beginning-search
 autoload -U down-line-or-beginning-search
 zle -N up-line-or-beginning-search
@@ -53,16 +55,16 @@ zle -N down-line-or-beginning-search
 bindkey "^k" up-line-or-beginning-search # Up in history
 bindkey "^j" down-line-or-beginning-search # Down in history
 
-# Edit line in vim
+# Edit line in vim with Ctrl+e
 autoload edit-command-line
 zle -N edit-command-line
+bindkey '^e' edit-command-line
 
 # use colors
 autoload -U colors && colors
 
-# set PROMPT
+# show git repo and changes (zsh can be slow in repos)
 # from https://github.com/zsh-users/zsh/blob/master/Misc/vcs_info-examples
-setopt prompt_subst
 autoload -Uz vcs_info
 zstyle ':vcs_info:*' enable git svn
 precmd_vcs_info() { vcs_info }
@@ -70,7 +72,7 @@ precmd_functions+=( precmd_vcs_info )
 
 # add a function to check for untracked files in the directory.
 zstyle ':vcs_info:git*+set-message:*' hooks git-untracked
-# 
+
 +vi-git-untracked(){
     if [[ $(git rev-parse --is-inside-work-tree 2> /dev/null) == 'true' ]] && \
         git status --porcelain | grep '??' &> /dev/null ; then
@@ -85,11 +87,21 @@ zstyle ':vcs_info:git*+set-message:*' hooks git-untracked
 zstyle ':vcs_info:*' check-for-changes true
 zstyle ':vcs_info:git*' formats "%F{11}[%b]%F{9}%m%u%c%{$reset_color%}"
 
-PROMPT='%F{10}%n%F{13}@%F{4}%~%{$reset_color%}${vcs_info_msg_0_} '
-# set editor and browser
-export EDITOR='nvim'
+# set PROMPT
+setopt prompt_subst
+
+# Prompt: user@pwd[git]*
+PROMPT='%B%F{10}%n%F{5}@%F{4}%~%{$reset_color%}${vcs_info_msg_0_} %b'
+
+# Prompt: user@pwd
+# PROMPT='%B%F{10}%n%F{5}@%F{4}%~%{$reset_color%}%b '
+
+# set default programs
+export EDITOR="nvim"
 export BROWSER="firefox"
 export TERMINAL="konsole"
+export SHELL="/usr/bin/zsh"
 
 # extend PATH
-export PATH=$PATH
+export PATH=$PATH":$HOME/.local/bin"
+

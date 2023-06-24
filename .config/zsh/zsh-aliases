@@ -1,7 +1,11 @@
 # Colorize ls
 alias ls='ls --color=auto'
+alias lars='ls -larS'
 
 # Colorize grep output (good for log files)
 alias grep='grep --color=auto'
 alias egrep='egrep --color=auto'
 alias fgrep='fgrep --color=auto'
+
+# Youtube download extract music
+alias ytm='yt-dlp -x'
