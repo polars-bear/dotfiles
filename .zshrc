@@ -1,3 +1,4 @@
+#!/bin/zsh
 # ================================================= #
 # d8888b.  .d88b.  db       .d8b.  d8888b. .d8888.  #
 # 88  `8D .8P  Y8. 88      d8' `8b 88  `8D 88'  YP  #
@@ -7,7 +8,11 @@
 # 88       `Y88P'  Y88888P YP   YP 88   YD `8888Y'  #
 # ================================================= #
 
-#!/bin/zsh
+
+# ================================================= #
+# PLUGINS & OPTIONS
+# ================================================= #
+
 export ZDOTDIR=$HOME/.config/zsh
 
 # source custom functions
@@ -25,6 +30,9 @@ setopt menucomplete
 setopt extendedglob
 setopt interactive_comments
 
+# use colors
+autoload -U colors && colors
+
 # configure history
 HISTSIZE=10000
 SAVEHIST=10000
@@ -36,6 +44,11 @@ setopt HIST_IGNORE_ALL_DUPS
 setopt HIST_IGNORE_SPACE
 setopt HIST_FIND_NO_DUPS
 setopt HIST_SAVE_NO_DUPS
+
+
+# ================================================= #
+# COMPLETIONS & KEYBINDS
+# ================================================= #
 
 # completions
 autoload -Uz compinit
@@ -60,8 +73,10 @@ autoload edit-command-line
 zle -N edit-command-line
 bindkey '^e' edit-command-line
 
-# use colors
-autoload -U colors && colors
+
+# ================================================= #
+# GIT INFO
+# ================================================= #
 
 # show git repo and changes (zsh can be slow in repos)
 # from https://github.com/zsh-users/zsh/blob/master/Misc/vcs_info-examples
@@ -87,6 +102,11 @@ zstyle ':vcs_info:git*+set-message:*' hooks git-untracked
 zstyle ':vcs_info:*' check-for-changes true
 zstyle ':vcs_info:git*' formats "%F{11}[%b]%F{9}%m%u%c%{$reset_color%}"
 
+
+# ================================================= #
+# PROMPT
+# ================================================= #
+
 # set PROMPT
 setopt prompt_subst
 
@@ -95,6 +115,37 @@ PROMPT='%B%F{10}%n%F{5}@%F{4}%~%{$reset_color%}${vcs_info_msg_0_} %b'
 
 # Prompt: user@pwd
 # PROMPT='%B%F{10}%n%F{5}@%F{4}%~%{$reset_color%}%b '
+
+# show execution time of last command
+function preexec() {
+  timer=${timer:-$SECONDS}
+  ms_start=$(($(date +%s%0N)/1000000))
+}
+
+function precmd() {
+  if [ $timer ]; then
+    timer_diff=$(($SECONDS - $timer))
+    ms_end=$(($(date +%s%0N)/1000000))
+    ms_diff=$(($ms_end-$ms_start))
+
+    if [ $timer_diff -gt 0 ]; then
+        ms_rem=$(($ms_diff%1000))
+        export RPROMPT="%B%F{yellow}${timer_diff}s ${ms_rem}ms %{$reset_color%}%b"
+    else
+        export RPROMPT="%B%F{yellow}${ms_diff}ms %{$reset_color%}%b"
+    fi
+
+    unset timer
+  fi
+}
+
+# Add newline to prompt for command input
+PROMPT+=$'\n%B%F{yellow}> %b'
+
+
+# ================================================= #
+# PROGRAMS & PATH
+# ================================================= #
 
 # set default programs
 export EDITOR="nvim"
