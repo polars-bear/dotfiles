@@ -10,7 +10,7 @@
 
 
 # ================================================= #
-# PLUGINS & OPTIONS
+# PLUGINS & OPTIONS 
 # ================================================= #
 
 export ZDOTDIR=$HOME/.config/zsh
@@ -128,7 +128,13 @@ function precmd() {
     ms_end=$(($(date +%s%0N)/1000000))
     ms_diff=$(($ms_end-$ms_start))
 
-    if [ $timer_diff -gt 0 ]; then
+    if [ $timer_diff -gt 60 ]; then
+        mins=$(($timer_diff/60))
+        secs_rem=$(($timer_diff%60))
+        export RPROMPT="%B%F{yellow}${mins}m ${secs_rem}s ${ms_rem}ms %{$reset_color%}%b"
+
+
+    elif [ $timer_diff -gt 0 ]; then
         ms_rem=$(($ms_diff%1000))
         export RPROMPT="%B%F{yellow}${timer_diff}s ${ms_rem}ms %{$reset_color%}%b"
     else
@@ -140,7 +146,7 @@ function precmd() {
 }
 
 # Add newline to prompt for command input
-PROMPT+=$'\n%B%F{yellow}> %b'
+PROMPT+=$'\n%B%F{yellow}> %{$reset_color%}%b'
 
 
 # ================================================= #
