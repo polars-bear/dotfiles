@@ -111,7 +111,7 @@ zstyle ':vcs_info:git*' formats "%F{11}[%b]%F{9}%m%u%c%{$reset_color%}"
 setopt prompt_subst
 
 # Prompt: user@pwd[git]*
-PROMPT='%B%F{10}%n%F{5}@%F{4}%~%{$reset_color%}${vcs_info_msg_0_} %b'
+PROMPT='%B%F{10}%n %F{5}@ %F{4}%~ %{$reset_color%}${vcs_info_msg_0_} %b'
 
 # Prompt: user@pwd
 # PROMPT='%B%F{10}%n%F{5}@%F{4}%~%{$reset_color%}%b '
