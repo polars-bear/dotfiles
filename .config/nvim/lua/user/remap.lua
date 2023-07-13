@@ -1,7 +1,7 @@
 vim.g.mapleader = " "
 
 -- Explore
-vim.keymap.set("n", "<leader>pv", vim.cmd.Ex)
+vim.keymap.set("n", "<leader>wj", vim.cmd.Ex)
 
 -- Keep cursor in the middle
 vim.keymap.set("n", "<C-d>", "<C-d>zz")
@@ -26,6 +26,7 @@ vim.keymap.set("i", "<C-c>", "<Esc>")
 
 -- Format
 vim.keymap.set("n", "<leader>f", function() vim.lsp.buf.format() end)
+vim.keymap.set("n", "<leader>fl", function() vim.lsp.diagnostic.show_line_diagnostics() end)
 
 -- Indent in visual mode
 vim.keymap.set("v", ">", ">gv")

@@ -2,9 +2,11 @@ local lsp = require('lsp-zero')
 lsp.preset('recommended')
 
 lsp.ensure_installed({
-	'sumneko_lua',
 	'rust_analyzer',
 	'gopls',
+    'lua_ls',
+    'pylsp',
+    'clangd',
 })
 
 lsp.on_attach(function(client, bufnr)

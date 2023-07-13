@@ -15,11 +15,14 @@ return require('packer').startup(function(use)
             vim.cmd('colorscheme rose-pine')
         end
     })
+    use ({
+        "catppuccin/nvim",
+        as = "catppuccin"
+    })
 
     -- Telescope
     use({
-        'nvim-telescope/telescope.nvim', tag = '0.1.0',
-        -- or                            , branch = '0.1.x',
+        'nvim-telescope/telescope.nvim',
         requires = { { 'nvim-lua/plenary.nvim' } }
     })
 
